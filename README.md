@@ -40,7 +40,3 @@ A comprehensive, full-stack To-Do List application designed for ultimate product
 * **Tools:** Axios (API requests), date-fns (Date manipulation)
 
 
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git)
