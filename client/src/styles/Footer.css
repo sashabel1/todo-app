@@ -1,0 +1,11 @@
+.main-footer {
+  background-color: var(--coral);
+  color: var(--white);
+  text-align: center;
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+}
