@@ -8,17 +8,41 @@ const Signup = () => {
     email: '', 
     password: '' 
   });
+
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signing up with:", formData);
-    
-    navigate('/dashboard');
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Success:", data.message);
+        alert('Registered successfully! Now you can login.');
+        navigate('/login');
+      } else {
+        setError(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError('Server is not responding. Please try again later.');
+    }
   };
 
   return (
@@ -26,6 +50,7 @@ const Signup = () => {
       <div className="signup-card">
         <h2 className="signup-title">Create Account</h2>
         <p className="signup-subtitle">Join us to start managing your tasks</p>
+        {error && <p style={{ color: '#F96E5B', fontSize: '0.8rem', marginBottom: '10px' }}>{error}</p>}
         
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="input-group">

@@ -11,11 +11,27 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", formData);
-    
-    navigate('/dashboard');
-  };
+  e.preventDefault();
+  
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert(`Welcome back, ${data.user.fullName}!`);
+      navigate('/dashboard'); 
+    } else {
+      alert(data.message); 
+    }
+  } catch (error) {
+    alert('Server error');
+  }
+};
 
   return (
     <div className="login-page">
