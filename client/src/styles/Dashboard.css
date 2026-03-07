@@ -1,0 +1,83 @@
+.dashboard-container {
+  padding: 2rem;
+  width: 100%;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #FFF9F0;
+  min-height: calc(100vh - 160px);
+  overflow-x: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 3px solid var(--coral);
+  padding-bottom: 1rem;
+}
+
+.dashboard-title {
+  color: #3F9AAE;
+  font-family: 'serif';
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid #3F9AAE;
+  background: white;
+  color: #3F9AAE;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.filter-btn.active {
+  background: #3F9AAE;
+  color: white;
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.tasks-table th {
+  background-color: #3F9AAE;
+  color: white;
+  padding: 15px;
+  text-align: left;
+}
+
+.tasks-table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.task-row:hover {
+  background-color: #f9f9f9;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-completed { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }

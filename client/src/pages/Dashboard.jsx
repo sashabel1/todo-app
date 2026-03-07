@@ -1,9 +1,126 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import '../styles/Dashboard.css';
+import AddTaskForm from '../components/AddTaskForm';
 
-export default function Dashboard() {
+const Dashboard = () => {
+  const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState('all'); // 'all', 'today', 'week', 'month', 'year'
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const [showModal, setShowModal] = useState(false);
+
+  // Fetch tasks 
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const user = JSON.parse(localStorage.getItem('user')); 
+      if (!user) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/tasks/${user.id}`);
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+
+//func checks if a date falls within the current week
+  const isThisWeek = (date) => {
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    startOfWeek.setHours(0,0,0,0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    endOfWeek.setHours(23,59,59,999);
+    
+    const taskDate = new Date(date);
+    return taskDate >= startOfWeek && taskDate <= endOfWeek;
+  };
+
+  const filteredTasks = tasks.filter(task => {
+    const taskDate = new Date(task.dueDate);
+    const now = new Date();
+    
+    let timeMatch = true;
+    if (filter === 'today') {
+      timeMatch = taskDate.toDateString() === now.toDateString();
+    } else if (filter === 'week') {
+      timeMatch = isThisWeek(task.dueDate);
+    } else if (filter === 'month') {
+      timeMatch = taskDate.getMonth() === now.getMonth() && taskDate.getFullYear() === now.getFullYear();
+    } else if (filter === 'year') {
+      timeMatch = taskDate.getFullYear() === now.getFullYear();
+    }
+
+    const categoryMatch = categoryFilter === 'all' || task.customCategory === categoryFilter;
+
+    return timeMatch && categoryMatch;
+  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
+
   return (
-    <div>
-      <h1>Dashboard Page</h1>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1 className="dashboard-title">TO DO DASHBOARD</h1>
+        <button className="btn-primary" onClick={() => setShowModal(true)}>
+          + NEW TASK
+        </button>
+      </div>
+
+      {showModal && (
+        <AddTaskForm 
+          userId={JSON.parse(localStorage.getItem('user'))?.id} 
+          onTaskAdded={(newTask) => {
+            setTasks([newTask, ...tasks]);
+            setShowModal(false);
+          }} 
+          closeModal={() => setShowModal(false)} 
+        />
+      )}
+
+
+      <div className="filter-bar">
+        {['all', 'today', 'week', 'month', 'year'].map(f => (
+          <button 
+            key={f} 
+            className={`filter-btn ${filter === f ? 'active' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      <table className="tasks-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Category</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredTasks.map(task => (
+            <tr key={task._id} className="task-row">
+              <td>
+                <span className={`status-badge ${task.isCompleted ? 'status-completed' : 'status-pending'}`}>
+                  {task.isCompleted ? 'Done' : 'Pending'}
+                </span>
+              </td>
+              <td style={{ fontWeight: '600' }}>{task.title}</td>
+              <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date'}</td>
+              <td>{task.customCategory || 'General'}</td>
+              <td style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-}
+};
+
+export default Dashboard;

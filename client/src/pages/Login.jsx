@@ -23,6 +23,11 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
+      localStorage.setItem('user', JSON.stringify({
+          id: data.user.id,
+          fullName: data.user.fullName
+        }));
+        
       alert(`Welcome back, ${data.user.fullName}!`);
       navigate('/dashboard'); 
     } else {
