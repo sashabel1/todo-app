@@ -1,8 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import '../styles/Header.css';
 
 const Header = ({ onMenuClick }) => {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('user'); 
+    navigate('/'); 
+    
+  };
   return (
     <header className="main-header">
       <button className="menu-button" onClick={onMenuClick}>
@@ -12,6 +20,14 @@ const Header = ({ onMenuClick }) => {
       <Link to="/" className="header-title-link">
         <h1 className="header-title">MY TO DO LIST</h1>
       </Link>
+
+      {user ? (
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      ) : (
+        <div className="header-spacer"></div>
+      )}
 
       <div className="header-spacer"></div> 
     </header>
