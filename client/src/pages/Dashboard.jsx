@@ -44,6 +44,23 @@ const Dashboard = () => {
   }
 };
 
+// Delete task
+const deleteTask = async (taskId) => {
+  if (!window.confirm("Are you sure you want to delete this task?")) return;
+
+  try {
+    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      setTasks(tasks.filter(task => task._id !== taskId));
+    }
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+};
+
 //func checks if a date falls within the current week
   const isThisWeek = (date) => {
     const now = new Date();
@@ -118,6 +135,7 @@ const Dashboard = () => {
             <th>Due Date</th>
             <th>Category</th>
             <th>Description</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -140,6 +158,15 @@ const Dashboard = () => {
               <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date'}</td>
               <td>{task.customCategory || 'General'}</td>
               <td style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</td>
+              <td className="actions-cell">
+                <button 
+                  onClick={() => deleteTask(task._id)} 
+                  className="delete-btn"
+                  title="Delete Task"
+                >
+                  🗑️
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

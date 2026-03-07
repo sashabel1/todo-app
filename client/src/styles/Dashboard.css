@@ -176,3 +176,28 @@
 .status-container {
   text-decoration: none !important;
 }
+
+
+.actions-cell {
+  text-align: center;
+  width: 80px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  color: #888;
+}
+
+.delete-btn:hover {
+  color: #F96E5B;
+  transform: scale(1.2);
+}
+
+.task-row-completed .delete-btn {
+  text-decoration: none !important;
+  opacity: 1; 
+}
