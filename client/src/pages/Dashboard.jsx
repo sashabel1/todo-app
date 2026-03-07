@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
 
   const [showModal, setShowModal] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState(null);
 
   // Fetch tasks 
   useEffect(() => {
@@ -74,6 +75,16 @@ const deleteTask = async (taskId) => {
     return taskDate >= startOfWeek && taskDate <= endOfWeek;
   };
 
+  const handleEditClick = (task) => {
+    setTaskToEdit(task);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setTaskToEdit(null);
+  };
+
   const filteredTasks = tasks.filter(task => {
     const taskDate = new Date(task.dueDate);
     const now = new Date();
@@ -106,11 +117,16 @@ const deleteTask = async (taskId) => {
       {showModal && (
         <AddTaskForm 
           userId={JSON.parse(localStorage.getItem('user'))?.id} 
-          onTaskAdded={(newTask) => {
-            setTasks([newTask, ...tasks]);
-            setShowModal(false);
+          taskToEdit={taskToEdit}
+          onTaskSaved={(savedTask) => {
+            if (taskToEdit) {
+              setTasks(tasks.map(t => t._id === savedTask._id ? savedTask : t));
+            } else {
+              setTasks([savedTask, ...tasks]);
+            }
+            handleCloseModal();
           }} 
-          closeModal={() => setShowModal(false)} 
+          closeModal={handleCloseModal} 
         />
       )}
 
@@ -159,6 +175,13 @@ const deleteTask = async (taskId) => {
               <td>{task.customCategory || 'General'}</td>
               <td style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</td>
               <td className="actions-cell">
+                <button 
+                    onClick={() => handleEditClick(task)} 
+                    className="edit-btn"
+                    title="Edit Task"
+                  >
+                    ✏️
+                  </button>
                 <button 
                   onClick={() => deleteTask(task._id)} 
                   className="delete-btn"
