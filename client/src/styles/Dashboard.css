@@ -1,3 +1,4 @@
+/* --- Container & Layout --- */
 .dashboard-container {
   padding: 2rem;
   width: 100%;
@@ -6,6 +7,7 @@
   background-color: #FFF9F0;
   min-height: calc(100vh - 160px);
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .dashboard-header {
@@ -24,6 +26,7 @@
   margin: 0;
 }
 
+/* --- Filter Bar --- */
 .filter-bar {
   display: flex;
   gap: 15px;
@@ -42,11 +45,16 @@
   transition: 0.3s;
 }
 
+.filter-btn:hover {
+  background-color: #f0f7f9;
+}
+
 .filter-btn.active {
   background: #3F9AAE;
   color: white;
 }
 
+/* --- Table Styles --- */
 .tasks-table {
   width: 100%;
   border-collapse: collapse;
@@ -66,18 +74,105 @@
 .tasks-table td {
   padding: 15px;
   border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.task-row {
+  transition: background-color 0.2s;
 }
 
 .task-row:hover {
   background-color: #f9f9f9;
 }
 
+.task-row-completed {
+  background-color: #fcfcfc;
+}
+
+/* --- Status & Checkbox Logic --- */
+.status-cell {
+  width: 180px;
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3F9AAE;
+}
+
 .status-badge {
-  padding: 5px 10px;
+  padding: 5px 12px;
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: bold;
+  transition: transform 0.2s, opacity 0.2s;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
 }
 
-.status-completed { background: #d4edda; color: #155724; }
-.status-pending { background: #fff3cd; color: #856404; }
+.status-completed { 
+  background: #d4edda; 
+  color: #155724; 
+}
+
+.status-pending { 
+  background: #fff3cd; 
+  color: #856404; 
+}
+
+/* --- Task Details Styles --- */
+.task-title-cell {
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+}
+
+.description-cell {
+  color: #666;
+  font-size: 0.9rem;
+  max-width: 400px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Task States (Completed) --- */
+.task-row-completed {
+  background-color: #f8f9fa !important;
+  transition: all 0.3s ease;
+}
+
+.task-row-completed td:not(.status-cell) {
+  opacity: 0.5; 
+  text-decoration: line-through;
+  color: #888;
+}
+
+.status-cell {
+  opacity: 1 !important; 
+}
+
+.task-row-completed .task-checkbox {
+  opacity: 1;
+  accent-color: #3F9AAE; 
+  cursor: pointer;
+}
+
+.task-row-completed .status-completed {
+  background-color: #d4edda !important; 
+  color: #155724 !important;
+  opacity: 1;
+  text-decoration: none !important;
+}
+
+.status-container {
+  text-decoration: none !important;
+}

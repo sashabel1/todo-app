@@ -26,6 +26,23 @@ const Dashboard = () => {
     fetchTasks();
   }, []);
 
+  // Toggle task completion status
+  const toggleComplete = async (taskId, currentStatus) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isCompleted: !currentStatus }),
+    });
+
+    if (response.ok) {
+      const updatedTask = await response.json();
+      setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
+    }
+  } catch (error) {
+    console.error("Error updating task status:", error);
+  }
+};
 
 //func checks if a date falls within the current week
   const isThisWeek = (date) => {
@@ -105,11 +122,19 @@ const Dashboard = () => {
         </thead>
         <tbody>
           {filteredTasks.map(task => (
-            <tr key={task._id} className="task-row">
-              <td>
-                <span className={`status-badge ${task.isCompleted ? 'status-completed' : 'status-pending'}`}>
-                  {task.isCompleted ? 'Done' : 'Pending'}
-                </span>
+            <tr key={task._id} className={`task-row ${task.isCompleted ? 'task-row-completed' : ''}`}>
+              <td className="status-cell">
+                <div className="status-container">
+                  <input 
+                    type="checkbox" 
+                    checked={task.isCompleted} 
+                    onChange={() => toggleComplete(task._id, task.isCompleted)}
+                    className="task-checkbox"
+                  />
+                  <span className={`status-badge ${task.isCompleted ? 'status-completed' : 'status-pending'}`}>
+                    {task.isCompleted ? 'Done' : 'Pending'}
+                  </span>
+                </div>
               </td>
               <td style={{ fontWeight: '600' }}>{task.title}</td>
               <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date'}</td>
