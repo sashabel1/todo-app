@@ -67,5 +67,16 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+//get unique categories for a user
+router.get('/categories/:userId', async (req, res) => {
+    try {
+        const categories = await Task.distinct('customCategory', { userId: req.params.userId });
+        const filteredCategories = categories.filter(cat => cat && cat.trim() !== '');
+        res.status(200).json(filteredCategories);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching categories', error });
+    }
+});
+
 
 module.exports = router;

@@ -4,28 +4,46 @@ import AddTaskForm from '../components/AddTaskForm';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filter, setFilter] = useState('all'); // 'all', 'today', 'week', 'month', 'year'
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [showMore, setShowMore] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
 
-  // Fetch tasks 
+  // Fetch categories for filter dropdown
+  const fetchCategories = async () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) return;
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/categories/${user.id}`);
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  // Fetch data 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem('user')); 
       if (!user) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/tasks/${user.id}`);
-        const data = await response.json();
-        setTasks(data);
+        const taskRes = await fetch(`http://localhost:5000/api/tasks/${user.id}`);
+        const taskData = await taskRes.json();
+        setTasks(taskData);
+        
+        await fetchCategories();
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching data:", error);
       }
     };
-    fetchTasks();
+    fetchData();
   }, []);
+
 
   // Toggle task completion status
   const toggleComplete = async (taskId, currentStatus) => {
@@ -56,6 +74,7 @@ const Dashboard = () => {
 
       if (response.ok) {
         setTasks(tasks.filter(task => task._id !== taskId));
+        fetchCategories();
       }
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -124,6 +143,7 @@ const Dashboard = () => {
             } else {
               setTasks([savedTask, ...tasks]);
             }
+            fetchCategories();
             handleCloseModal();
           }} 
           closeModal={handleCloseModal} 
@@ -135,12 +155,43 @@ const Dashboard = () => {
           <button 
             key={f} 
             className={`filter-btn ${filter === f ? 'active' : ''}`}
-            onClick={() => setFilter(f)}
+            onClick={() => {
+              setFilter(f);
+              setCategoryFilter('all');
+            }}
           >
             {f.toUpperCase()}
           </button>
         ))}
+        <div className="more-dropdown">
+          <button 
+            className={`filter-btn ${categoryFilter !== 'all' ? 'active' : ''}`}
+            onClick={() => setShowMore(!showMore)}
+          >
+            {categoryFilter === 'all' ? 'MORE ▼' : categoryFilter.toUpperCase()}
+          </button>
+          
+          {showMore && (
+            <ul className="dropdown-menu">
+              {categories.map(cat => (
+                <li 
+                  key={cat}
+                  className={`dropdown-item ${categoryFilter === cat ? 'active' : ''}`}
+                  onClick={() => {
+                    setCategoryFilter(cat); 
+                    setFilter('');      
+                    setShowMore(false);  
+                  }}
+                >
+                  {cat.toUpperCase()}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
+
+
 
       <table className="tasks-table">
         <thead>
