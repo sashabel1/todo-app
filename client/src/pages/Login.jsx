@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Login.css';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
@@ -27,7 +27,8 @@ const Login = () => {
           id: data.user.id,
           fullName: data.user.fullName
         }));
-        
+
+      if (onLogin) onLogin();
       alert(`Welcome back, ${data.user.fullName}!`);
       navigate('/dashboard'); 
     } else {

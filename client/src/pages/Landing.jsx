@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import '../styles/Landing.css';
 import logoImage from '../assets/logo.png'; 
 

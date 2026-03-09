@@ -2,13 +2,13 @@ import React from 'react';
 import { Link , useNavigate} from 'react-router-dom';
 import '../styles/Header.css';
 
-const Header = ({ onMenuClick }) => {
+const Header = ({ onMenuClick , setUser}) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
   const handleLogout = () => {
     localStorage.removeItem('user'); 
-    setUser(null); 
+    if (setUser) setUser(null);
     navigate('/');
   };
 
