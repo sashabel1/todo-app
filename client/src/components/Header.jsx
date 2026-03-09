@@ -8,9 +8,10 @@ const Header = ({ onMenuClick }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('user'); 
-    navigate('/'); 
-    
+    setUser(null); 
+    navigate('/');
   };
+
   return (
     <header className="main-header">
       <button className="menu-button" onClick={onMenuClick}>
@@ -18,7 +19,7 @@ const Header = ({ onMenuClick }) => {
       </button>
 
       <Link to="/" className="header-title-link">
-        <h1 className="header-title">MY TO DO LIST</h1>
+        <h1 className="header-title">{user ? `${user.fullName}'s` : 'My'} TO DO LIST</h1>
       </Link>
 
       {user ? (

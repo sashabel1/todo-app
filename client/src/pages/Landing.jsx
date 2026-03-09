@@ -6,6 +6,14 @@ import logoImage from '../assets/logo.png';
 const Landing = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+  
+
   return (
     <div className="landing-page">
       <div className="landing-content">

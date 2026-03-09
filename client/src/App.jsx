@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState ,useEffect } from 'react';
+import { BrowserRouter, Routes, Route ,Navigate } from 'react-router-dom';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -15,7 +15,17 @@ import './App.css';
 
 function App() {
 
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleAuthChange = () => {
+    const savedUser = localStorage.getItem('user');
+    setUser(savedUser ? JSON.parse(savedUser) : null);
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -25,17 +35,29 @@ function App() {
     <BrowserRouter>
       <div className="app-container">
         
-        <Header onMenuClick={toggleSidebar} />
+        <Header user={user} setUser={setUser} onMenuClick={toggleSidebar} />
 
         {/* <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} /> */}
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/" 
+              element={user ? <Navigate to="/dashboard" replace /> : <Landing />} 
+            />
+            <Route 
+              path="/login" 
+              element={user ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleAuthChange} />} 
+            />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route 
+              path="/dashboard" 
+              element={user ? <Dashboard /> : <Navigate to="/login" replace />} 
+            />
+            <Route 
+              path="/profile" 
+              element={user ? <Profile /> : <Navigate to="/login" replace />} 
+            />
           </Routes>
         </main>
 

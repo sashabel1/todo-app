@@ -29,40 +29,40 @@ const Dashboard = () => {
 
   // Toggle task completion status
   const toggleComplete = async (taskId, currentStatus) => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isCompleted: !currentStatus }),
-    });
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isCompleted: !currentStatus }),
+      });
 
-    if (response.ok) {
-      const updatedTask = await response.json();
-      setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
+      if (response.ok) {
+        const updatedTask = await response.json();
+        setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
     }
-  } catch (error) {
-    console.error("Error updating task status:", error);
-  }
-};
+  };
 
-// Delete task
-const deleteTask = async (taskId) => {
-  if (!window.confirm("Are you sure you want to delete this task?")) return;
+  // Delete task
+  const deleteTask = async (taskId) => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
 
-  try {
-    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-      method: 'DELETE',
-    });
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
 
-    if (response.ok) {
-      setTasks(tasks.filter(task => task._id !== taskId));
+      if (response.ok) {
+        setTasks(tasks.filter(task => task._id !== taskId));
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
-  } catch (error) {
-    console.error("Error deleting task:", error);
-  }
-};
+  };
 
-//func checks if a date falls within the current week
+  //func checks if a date falls within the current week
   const isThisWeek = (date) => {
     const now = new Date();
     const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -130,7 +130,6 @@ const deleteTask = async (taskId) => {
         />
       )}
 
-
       <div className="filter-bar">
         {['all', 'today', 'week', 'month', 'year'].map(f => (
           <button 
@@ -155,43 +154,50 @@ const deleteTask = async (taskId) => {
           </tr>
         </thead>
         <tbody>
-          {filteredTasks.map(task => (
-            <tr key={task._id} className={`task-row ${task.isCompleted ? 'task-row-completed' : ''}`}>
-              <td className="status-cell">
-                <div className="status-container">
-                  <input 
-                    type="checkbox" 
-                    checked={task.isCompleted} 
-                    onChange={() => toggleComplete(task._id, task.isCompleted)}
-                    className="task-checkbox"
-                  />
-                  <span className={`status-badge ${task.isCompleted ? 'status-completed' : 'status-pending'}`}>
-                    {task.isCompleted ? 'Done' : 'Pending'}
-                  </span>
-                </div>
-              </td>
-              <td style={{ fontWeight: '600' }}>{task.title}</td>
-              <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date'}</td>
-              <td>{task.customCategory || 'General'}</td>
-              <td style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</td>
-              <td className="actions-cell">
-                <button 
-                    onClick={() => handleEditClick(task)} 
-                    className="edit-btn"
-                    title="Edit Task"
+          {filteredTasks.map(task => {
+            const isOverdue = !task.isCompleted && task.dueDate && new Date(task.dueDate).setHours(0,0,0,0) < new Date().setHours(0,0,0,0);
+
+            return (
+              <tr 
+                key={task._id} 
+                className={`task-row ${task.isCompleted ? 'task-row-completed' : ''} ${isOverdue ? 'task-row-overdue' : ''}`}
+              >
+                <td className="status-cell">
+                  <div className="status-container">
+                    <input 
+                      type="checkbox" 
+                      checked={task.isCompleted} 
+                      onChange={() => toggleComplete(task._id, task.isCompleted)}
+                      className="task-checkbox"
+                    />
+                    <span className={`status-badge ${task.isCompleted ? 'status-completed' : 'status-pending'}`}>
+                      {task.isCompleted ? 'Done' : 'Pending'}
+                    </span>
+                  </div>
+                </td>
+                <td style={{ fontWeight: '600' }}>{task.title}</td>
+                <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date'}</td>
+                <td>{task.customCategory || 'General'}</td>
+                <td style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</td>
+                <td className="actions-cell">
+                  <button 
+                      onClick={() => handleEditClick(task)} 
+                      className="edit-btn"
+                      title="Edit Task"
+                    >
+                      ✏️
+                    </button>
+                  <button 
+                    onClick={() => deleteTask(task._id)} 
+                    className="delete-btn"
+                    title="Delete Task"
                   >
-                    ✏️
+                    🗑️
                   </button>
-                <button 
-                  onClick={() => deleteTask(task._id)} 
-                  className="delete-btn"
-                  title="Delete Task"
-                >
-                  🗑️
-                </button>
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

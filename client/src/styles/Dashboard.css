@@ -206,3 +206,21 @@
   transform: scale(1.1);
   color: #F96E5B;
 }
+
+.task-row-overdue {
+  background-color: rgba(249, 110, 91, 0.15) !important; 
+  transition: background-color 0.3s ease;
+}
+
+.task-row-overdue td {
+  color: #b3392b;
+}
+
+.task-row-overdue td:nth-child(3) {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.task-row-overdue:hover {
+  background-color: rgba(249, 110, 91, 0.25) !important;
+}
