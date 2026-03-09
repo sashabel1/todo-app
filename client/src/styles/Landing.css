@@ -49,9 +49,10 @@
 .hero-buttons {
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 
-.btn-primary {
+.landing-page .btn-primary {
   background-color: #F96E5B; 
   color: white;
   border: none;
@@ -60,9 +61,12 @@
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+
+  width: 160px;        
+  height: 54px;
 }
 
-.btn-secondary {
+.landing-page .btn-secondary {
   background-color: transparent;
   color: #3F9AAE; 
   border: 2px solid #3F9AAE;
@@ -71,6 +75,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+
+  width: 160px;        
+  height: 54px;
 }
 
 .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }

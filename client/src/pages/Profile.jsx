@@ -56,9 +56,9 @@ const Profile = () => {
   if (!profileData) return <div className="loading">Loading Profile...</div>;
 
   const chartData = [
-  { name: 'Created', value: profileData.stats?.totalCreated || 0, color: '#3F9AAE' },
+  { name: 'In Progress', value: profileData.stats?.inProgress || 0, color: '#3F9AAE' },
   { name: 'Completed', value: profileData.stats?.totalCompleted || 0, color: '#4CAF50' },
-  { name: 'Overdue', value: profileData.stats?.totalOverdue || 0, color: '#F96E5B' }, 
+  { name: 'Overdue', value: profileData.stats?.totalOverdue || 0, color: '#f13e26' }, 
   ];
 
   return (
@@ -119,15 +119,15 @@ const Profile = () => {
           <h2>Task Productivity</h2>
           <div className="stats-summary">
             <div className="stat-item">
-              <span className="stat-value">{profileData.stats?.totalCreated}</span>
-              <span className="stat-label"> Total Created</span>
+              <span className="stat-value" style={{ color: '#3F9AAE' }}>{profileData.stats?.inProgress}</span>
+              <span className="stat-label"> Total In Progress</span>
             </div>
             <div className="stat-item">
-              <span className="stat-value">{profileData.stats?.totalCompleted}</span>
+              <span className="stat-value" style={{ color: '#4CAF50' }}>{profileData.stats?.totalCompleted}</span>
               <span className="stat-label"> Total Done</span>
             </div>
             <div className="stat-item">
-            <span className="stat-value" style={{ color: '#F96E5B' }}>{profileData.stats?.totalOverdue || 0}</span>
+            <span className="stat-value" style={{ color: '#f13e26' }}>{profileData.stats?.totalOverdue || 0}</span>
             <span className="stat-label"> Overdue</span>
           </div>
           </div>

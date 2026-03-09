@@ -80,8 +80,11 @@ const AddTaskForm = ({ userId, taskToEdit, onTaskSaved, closeModal }) => {
             />
           </div>
           <div className="modal-actions">
-            <button type="button" onClick={closeModal} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">
+            <button type="button" onClick={closeModal} className="btn-cancel">
+              Cancel
+            </button>
+            
+            <button type="submit" className="btn-save">
               {taskToEdit ? 'Update Task' : 'Add Task'}
             </button>
           </div>

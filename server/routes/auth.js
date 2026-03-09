@@ -63,16 +63,19 @@ router.get('/user/:id', async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const Task = require('../models/Task');
-        const tasks = await Task.find({ userId: req.params.id, isCompleted: false });
+        const activeTasks = await Task.find({ 
+            userId: req.params.id, 
+            isCompleted: false 
+        });
         
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
-        const overdueCount = tasks.filter(task => {
-            return task.dueDate && new Date(task.dueDate) < now;
-        }).length;
+        const overdueCount = activeTasks.filter(task => task.dueDate && new Date(task.dueDate) < now).length;
+        const inProgressCount = activeTasks.length - overdueCount;
 
         const userData = user.toObject();
+        userData.stats.inProgress = inProgressCount;
         userData.stats.totalOverdue = overdueCount;
 
         res.json(userData);
