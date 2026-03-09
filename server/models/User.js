@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     customCategories: { 
         type: [String], 
         default: [] 
+    },
+    stats: {
+        totalCreated: { type: Number, default: 0 },
+        totalCompleted: { type: Number, default: 0 },
+        totalDeleted: { type: Number, default: 0 }
     }
 }, { 
     timestamps: true 

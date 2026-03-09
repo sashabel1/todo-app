@@ -128,7 +128,7 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-header">
         <h1 className="dashboard-title">TO DO DASHBOARD</h1>
-        <button className="btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn-primary" id="add-btn" onClick={() => setShowModal(true)}>
           + NEW TASK
         </button>
       </div>

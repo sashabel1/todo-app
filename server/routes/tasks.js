@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
+const User = require('../models/User');
 
-//add task
+// add task + increment totalCreated
 router.post('/', async (req, res) => {
     try {
         const { userId, title, description, dueDate, color, customCategory } = req.body;
@@ -17,13 +18,49 @@ router.post('/', async (req, res) => {
         });
 
         const savedTask = await newTask.save();
+
+        await User.findByIdAndUpdate(userId, { 
+            $inc: { 'stats.totalCreated': 1 } 
+        });
+
         res.status(201).json(savedTask);
     } catch (error) {
         res.status(500).json({ message: 'Error creating task', error });
     }
 });
 
-//get tasks by userId
+// update task + track completion stats
+router.patch('/:id', async (req, res) => {
+    try {
+        const oldTask = await Task.findById(req.params.id);
+        if (!oldTask) return res.status(404).json({ message: 'Task not found' });
+
+        const updatedTask = await Task.findByIdAndUpdate(
+            req.params.id, 
+            { $set: req.body }, 
+            { new: true } 
+        );
+
+        const wasCompleted = oldTask.isCompleted;
+        const isNowCompleted = updatedTask.isCompleted;
+
+        if (!wasCompleted && isNowCompleted) {
+            await User.findByIdAndUpdate(updatedTask.userId, { 
+                $inc: { 'stats.totalCompleted': 1 } 
+            });
+        } else if (wasCompleted && !isNowCompleted) {
+            await User.findByIdAndUpdate(updatedTask.userId, { 
+                $inc: { 'stats.totalCompleted': -1 } 
+            });
+        }
+        
+        res.status(200).json(updatedTask);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating task', error });
+    }
+});
+
+// get tasks by userId
 router.get('/:userId', async (req, res) => {
     try {
         const tasks = await Task.find({ userId: req.params.userId });
@@ -33,33 +70,21 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-//update task
-router.patch('/:id', async (req, res) => {
-    try {
-        const updatedTask = await Task.findByIdAndUpdate(
-            req.params.id, 
-            { $set: req.body }, 
-            { new: true } 
-        );
-        
-        if (!updatedTask) {
-            return res.status(404).json({ message: 'Task not found' });
-        }
-        
-        res.status(200).json(updatedTask);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating task', error });
-    }
-});
-
-//delete task
+// delete task + increment totalDeleted
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedTask = await Task.findByIdAndDelete(req.params.id);
+        const taskToDelete = await Task.findById(req.params.id);
         
-        if (!deletedTask) {
+        if (!taskToDelete) {
             return res.status(404).json({ message: 'Task not found' });
         }
+
+        const userId = taskToDelete.userId;
+        await Task.findByIdAndDelete(req.params.id);
+
+        await User.findByIdAndUpdate(userId, { 
+            $inc: { 'stats.totalDeleted': 1 } 
+        });
         
         res.status(200).json({ message: 'Task deleted successfully' });
     } catch (error) {
@@ -67,7 +92,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-//get unique categories for a user
+// get unique categories for a user
 router.get('/categories/:userId', async (req, res) => {
     try {
         const categories = await Task.distinct('customCategory', { userId: req.params.userId });
@@ -77,6 +102,5 @@ router.get('/categories/:userId', async (req, res) => {
         res.status(500).json({ message: 'Error fetching categories', error });
     }
 });
-
 
 module.exports = router;

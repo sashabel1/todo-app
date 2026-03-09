@@ -2,7 +2,7 @@ import React from 'react';
 import { Link , useNavigate} from 'react-router-dom';
 import '../styles/Header.css';
 
-const Header = ({ onMenuClick , setUser}) => {
+const Header = ({setUser}) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -14,9 +14,13 @@ const Header = ({ onMenuClick , setUser}) => {
 
   return (
     <header className="main-header">
-      <button className="menu-button" onClick={onMenuClick}>
-        ☰
-      </button>
+      <div className="header-left">
+        {user && (
+          <Link to="/profile" className="profile-link-btn">
+            MY PROFILE
+          </Link>
+        )}
+      </div>
 
       <Link to="/" className="header-title-link">
         <h1 className="header-title">{user ? `${user.fullName}'s` : 'My'} TO DO LIST</h1>
